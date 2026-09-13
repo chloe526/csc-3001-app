@@ -1,9 +1,11 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -70,7 +72,36 @@ const findUsers = (name, job) => {
   });
 };
 
+function postUser(person) {
+  const promise = fetch("Http://localhost:8000/users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(person),
+  });
+
+  return promise;
+}
+
+function updateList(person) {
+  postUser(person)
+    .then((response) => {
+      if (response.status === 201) {
+        setCharacters([...characters, person]);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const generateId = () => {
+  return Math.random().toString(36).substring(2, 8);
+};
+
 const addUser = (user) => {
+  user.id = generateId();
   users["users_list"].push(user);
   return user;
 };
@@ -102,8 +133,8 @@ app.get("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  const addedUser = addUser(userToAdd);
+  res.status(201).send(addedUser);
 });
 
 app.listen(port, () => {
