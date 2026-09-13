@@ -8,14 +8,32 @@ function MyApp() {
   const [characters, setCharacters] = useState([]);
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
+    const id = characters[index].id;
+
+    deleteUser(id)
+      .then((response) => {
+        if (response.status === 204) {
+          const updated = characters.filter((character, i) => {
+            return i !== index;
+          });
+          setCharacters(updated);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   function fetchUsers() {
     const promise = fetch("http://localhost:8000/users");
+    return promise;
+  }
+
+  function deleteUser(id) {
+    const promise = fetch(`http://localhost:8000/users/${id}`, {
+      method: "DELETE",
+    });
+
     return promise;
   }
 

@@ -60,7 +60,7 @@ app.delete("/users/:id", (req, res) => {
     return res.status(404).send("Resource not found.");
   }
 
-  res.status(200).send(deletedUser);
+  res.status(204).send();
 });
 
 const findUsers = (name, job) => {
